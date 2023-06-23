@@ -255,6 +255,111 @@ This takes about 3 minutes to run on a node with 16 cores.
 If all went well, the output of `tree /path/to/demo_dataset` will be
 
 ```
+demo_dataset
+├── data
+│   ├── fly_1
+│   │   ├── green
+│   │   │   └── lc11.nii
+│   │   └── structural_image.nii
+│   ├── fly_2
+│   │   ├── green
+│   │   │   └── lc11.nii
+│   │   └── structural_image.nii
+│   ├── fly_3
+│   │   ├── green
+│   │   │   └── lc11.nii
+│   │   └── structural_image.nii
+│   ├── fly_4
+│   │   ├── green
+│   │   │   └── lc11.nii
+│   │   └── structural_image.nii
+│   ├── fly_5
+│   │   ├── green
+│   │   │   └── lc11.nii
+│   │   └── structural_image.nii
+│   ├── fly_6
+│   │   ├── green
+│   │   │   └── lc11.nii
+│   │   └── structural_image.nii
+│   ├── fly_7
+│   │   ├── green
+│   │   │   └── lc11.nii
+│   │   └── structural_image.nii
+│   ├── fly_8
+│   │   ├── green
+│   │   │   └── lc11.nii
+│   │   └── structural_image.nii
+│   └── fly_9
+│       ├── green
+│       │   └── lc11.nii
+│       └── structural_image.nii
+├── logs
+│   ├── build_template.log
+│   ├── register_structural_images_to_template_fly_1.log
+│   ├── register_structural_images_to_template_fly_2.log
+│   ├── register_structural_images_to_template_fly_3.log
+│   ├── register_structural_images_to_template_fly_4.log
+│   ├── register_structural_images_to_template_fly_5.log
+│   ├── register_structural_images_to_template_fly_6.log
+│   ├── register_structural_images_to_template_fly_7.log
+│   ├── register_structural_images_to_template_fly_8.log
+│   ├── register_structural_images_to_template_fly_9.log
+│   ├── register_template_to_fda.log
+│   ├── transform_dependent_images_to_fda_fly_1_green_lc11.log
+│   ├── transform_dependent_images_to_fda_fly_2_green_lc11.log
+│   ├── transform_dependent_images_to_fda_fly_3_green_lc11.log
+│   ├── transform_dependent_images_to_fda_fly_4_green_lc11.log
+│   ├── transform_dependent_images_to_fda_fly_5_green_lc11.log
+│   ├── transform_dependent_images_to_fda_fly_6_green_lc11.log
+│   ├── transform_dependent_images_to_fda_fly_7_green_lc11.log
+│   ├── transform_dependent_images_to_fda_fly_8_green_lc11.log
+│   ├── transform_dependent_images_to_fda_fly_9_green_lc11.log
+│   ├── transform_dependent_images_to_template_fly_1_green_lc11.log
+│   ├── transform_dependent_images_to_template_fly_2_green_lc11.log
+│   ├── transform_dependent_images_to_template_fly_3_green_lc11.log
+│   ├── transform_dependent_images_to_template_fly_4_green_lc11.log
+│   ├── transform_dependent_images_to_template_fly_5_green_lc11.log
+│   ├── transform_dependent_images_to_template_fly_6_green_lc11.log
+│   ├── transform_dependent_images_to_template_fly_7_green_lc11.log
+│   ├── transform_dependent_images_to_template_fly_8_green_lc11.log
+│   └── transform_dependent_images_to_template_fly_9_green_lc11.log
+├── results
+│   ├── template.nii
+│   ├── template_to_fda
+│   │   ├── registered.nii
+│   │   └── transform.h5
+│   └── transformed_images
+│       ├── fly_1
+│       │   └── green
+│       │       └── lc11.nii
+│       ├── fly_2
+│       │   └── green
+│       │       └── lc11.nii
+│       ├── fly_3
+│       │   └── green
+│       │       └── lc11.nii
+│       ├── fly_4
+│       │   └── green
+│       │       └── lc11.nii
+│       ├── fly_5
+│       │   └── green
+│       │       └── lc11.nii
+│       ├── fly_6
+│       │   └── green
+│       │       └── lc11.nii
+│       ├── fly_7
+│       │   └── green
+│       │       └── lc11.nii
+│       ├── fly_8
+│       │   └── green
+│       │       └── lc11.nii
+│       └── fly_9
+│           └── green
+│               └── lc11.nii
+└── templates
+    └── FDA.nii
+
+42 directories, 60 files
 ```
 
 # Reference
