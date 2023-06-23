@@ -1,0 +1,6 @@
+default-resources:
+ - slurm_account=trc
+ - slurm_partition=trc
+ - mem_mb="128G"
+ - nodes=1
+ - tasks=1

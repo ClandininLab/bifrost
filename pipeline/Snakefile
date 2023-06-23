@@ -1,0 +1,113 @@
+SAMPLES, CHANNELS, IMAGES = glob_wildcards("data/{sample}/{channel}/{image}.nii")
+
+MAX_THREADS = 16
+
+rule all:
+    input:
+        expand("results/transformed_images/{sample}/{channel}/{image}.nii", zip, sample=SAMPLES, channel=CHANNELS, image=IMAGES)
+    localrule: True
+
+
+rule clean:
+    shell:
+        "rm -rf results"
+
+rule build_template:
+    input:
+        expand("data/{sample}/structural_image.nii", sample=SAMPLES)
+    output:
+        "results/template.nii"
+    log:
+        "logs/build_template.log"
+    resources:
+        runtime="7d",
+    threads:
+        MAX_THREADS
+    shell:
+        "bifrost build_template -f --mirror --log {log} --input {input} --output results"
+
+
+rule register_template_to_fda:
+    input:
+        template="results/template.nii",
+        fda="templates/FDA.nii",
+    output:
+        directory("results/template_to_fda")
+    log:
+        "logs/register_template_to_fda.log"
+    resources:
+        runtime="1d",
+    threads:
+        MAX_THREADS
+    shell:
+        "bifrost register -f "
+        "--log {log} "
+        "--mirror_warp "
+        "--moving_clip_limit -1 "
+        "{input.template} "
+        "{input.fda} "
+        "results/template_to_fda "
+
+
+
+rule register_structural_images_to_template:
+    input:
+        image="data/{sample}/structural_image.nii",
+        template="results/template.nii"
+    output:
+        temp(directory("results/structural_images_to_template/{sample}"))
+    log:
+        "logs/register_structural_images_to_template_{sample}.log"
+    resources:
+        runtime="1d",
+    threads:
+        MAX_THREADS
+    shell:
+        "bifrost register -f "
+        "--log {log} "
+        "--skip_synthmorph "
+        "--moving_clip_limit -1 "
+        "{input.image} "
+        "{input.template} "
+        "results/structural_images_to_template/{wildcards.sample}"
+
+
+
+rule transform_dependent_images_to_template:
+    input:
+        registration="results/structural_images_to_template/{sample}",
+        image="data/{sample}/{channel}/{image}.nii"
+    output:
+        temp("results/transform_dependent_images_to_template/{sample}/{channel}/{image}.nii")
+    log:
+        "logs/transform_dependent_images_to_template_{sample}_{channel}_{image}.log"
+    resources:
+        runtime="1d",
+    threads:
+        4
+    shell:
+        "bifrost transform "
+        "--log {log} "
+        "--result_name ./results/transform_dependent_images_to_template/{wildcards.sample}/{wildcards.channel}/{wildcards.image}.nii "
+        "{input.registration} "
+        "{input.image}"
+
+
+rule transform_dependent_images_to_fda:
+    input:
+        registration="results/template_to_fda",
+        image="results/transform_dependent_images_to_template/{sample}/{channel}/{image}.nii"
+    output:
+        "results/transformed_images/{sample}/{channel}/{image}.nii"
+    log:
+        "logs/transform_dependent_images_to_fda_{sample}_{channel}_{image}.log"
+    resources:
+        runtime="1d",
+    threads:
+        4
+    shell:
+        "bifrost transform "
+        "--log {log} "
+        "--result_name ./results/transformed_images/{wildcards.sample}/{wildcards.channel}/{wildcards.image}.nii "
+        "{input.registration} "
+        "{input.image}"
