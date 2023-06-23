@@ -39,7 +39,9 @@ connection and an empty `pip` cache.
 
 Build the BIFROST docker image by running
 
-`docker build /path/to/bifrost --tag bifrost:latest`
+```
+docker build /path/to/bifrost --tag bifrost:latest
+```
 
 You can then drop into a shell in a ready to go environment with
 
@@ -216,7 +218,9 @@ example
 To run the pipeline in single-node mode using up to 16 cores, run the following command
 from within the `pipeline` directory of this repo.
 
-`snakemake --cores 16 --directory /path/to/your/dataset`
+```
+snakemake --cores 16 --directory /path/to/your/dataset
+```
 
 ### Distributed execution
 
@@ -227,7 +231,9 @@ To execute the pipeline on a Slurm cluster modify the `MAX_THREADS` value in
 The pipeline can then be executed using at most 64 jobs in parallel by running the following command from within
 the `pipeline` directory of this repo
 
-`snakemake --jobs 64 --profile cluster_profile --directory /path/to/your/dataset`
+```
+snakemake --jobs 64 --profile cluster_profile --directory /path/to/your/dataset
+```
 
 You can submit an unlimited number of jobs in parallel by setting `--jobs all`
 if you dare tempt the wrath of your cluster sysadmin. This is not recommended.
@@ -248,7 +254,9 @@ lfs](https://git-lfs.com/) prior to cloning this repository to download it.
 Once you have unpacked `demo_dataset.tar.gz` to a location of your choice, you
 can run the demo by `cd`ing to `pipeline/` and running
 
-`snakemake --cores all --directory /path/to/demo_dataset`
+```
+snakemake --cores all --directory /path/to/demo_dataset
+```
 
 This takes about 3 minutes to run on a node with 16 cores.
 
