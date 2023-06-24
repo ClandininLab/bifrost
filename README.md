@@ -111,7 +111,12 @@ is that it transparently orchestrates the distributed execution of the pipeline
 on your favorite cluster/cloud platform.
 
 
-### Required directory structure
+### Data requirements
+
+You must provide your data as NIfTI images with accurate metadata. NIfTI
+metadata includes a specification of the transformation between voxel-space and
+anatomical space, which is used during registration. In our experience the vast
+majority of registration falures are caused by incorrect metadata.
 
 In order to be correctly parsed by the Snakemake workflow you must follow a
 prescribed directory structure. Under your top-level dataset directory there
