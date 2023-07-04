@@ -40,7 +40,7 @@ connection and an empty `pip` cache.
 Build the BIFROST docker image by running
 
 ```
-docker build /path/to/bifrost --tag bifrost:latest
+docker build /path/to/bifrost-repo --tag bifrost:latest
 ```
 
 You can then drop into a shell in a ready to go environment with
