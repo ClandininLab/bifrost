@@ -218,7 +218,13 @@ example
     └── FDA.nii
 ```
 
-### Single-node execution
+### Usage
+
+To use the pipeline you must install the `bifrost` using `pip` _and_ clone this
+repository to a location of your choice. This is because `snakemake` must be
+executed from within a directory containing a `Snakefile`.
+
+#### Single-node execution
 
 To run the pipeline in single-node mode using up to 16 cores, run the following command
 from within the `pipeline` directory of this repo.
@@ -227,7 +233,7 @@ from within the `pipeline` directory of this repo.
 snakemake --cores 16 --directory /path/to/your/dataset
 ```
 
-### Distributed execution
+#### Distributed execution
 
 To execute the pipeline on a Slurm cluster modify the `MAX_THREADS` value in
 `pipeline/Snakefile` and the account, partition and memory values in
@@ -237,11 +243,11 @@ The pipeline can then be executed using at most 64 jobs in parallel by running t
 the `pipeline` directory of this repo
 
 ```
-snakemake --jobs 64 --profile cluster_profile --directory /path/to/your/dataset
+snakemake --slurm --jobs 64 --profile cluster_profile --directory /path/to/your/dataset
 ```
 
 You can submit an unlimited number of jobs in parallel by setting `--jobs all`
-if you dare tempt the wrath of your cluster sysadmin. This is not recommended.
+if you dare tempt the wrath of your cluster admin.
 
 Please refer to the Snakemake docs for instructions on how to execute the
 pipeline on
@@ -254,7 +260,8 @@ scheduling systems.
 # Demo
 
 The demo dataset is included in this repository. Install [git
-lfs](https://git-lfs.com/) prior to cloning this repository to download it.
+lfs](https://git-lfs.com/) prior to cloning this repository to download it, or
+install it and run `git lfs pull` if you have already cloned the repo.
 
 Once you have unpacked `demo_dataset.tar.gz` to a location of your choice, you
 can run the demo by `cd`ing to `pipeline/` and running
