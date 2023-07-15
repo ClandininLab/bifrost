@@ -29,7 +29,7 @@ Refer to `setup.py` for a full list of dependencies.
 # Installation
 
 ```
-pip install git+ssh://git@github.com/ClandininLab/bifrost.git@release
+pip install git+ssh://git@github.com/ClandininLab/bifrost.git
 ```
 
 Installation takes about two minutes on a computer with a fast internet
