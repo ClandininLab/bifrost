@@ -16,7 +16,7 @@ from skimage.exposure import equalize_adapthist
 from skimage.filters import threshold_triangle as triangle
 from sklearn.preprocessing import quantile_transform
 
-from bifrost.util import update_image_array
+from bifrost.util import sha256, update_image_array
 
 
 def build_template(args):
@@ -117,19 +117,19 @@ def build_template(args):
         # ==================================================================== #
 
         logger.info(
-            "Preprocessing flies: %s",
-            [os.path.basename(input_path) for input_path in input_paths],
+            "Preprocessing images: %s",
+            input_paths,
         )
 
         for input_path in input_paths:
             name = os.path.basename(input_path).split(".")[0]
-            output_path = f"{args.output}/preprocessed/{name}.nii"
+            output_path = f"{args.output}/preprocessed/{sha256(input_path.encode())}_{name}.nii"
 
             if not os.path.exists(output_path):
-                logger.info("Preprocessing %s", name)
+                logger.info("Preprocessing %s", input_path)
                 preprocess(args, input_path, output_path)
             else:
-                logger.info("%s already preprocessed", name)
+                logger.info("Cached result found for %s preprocessing", name)
 
         # ========================================================================== #
         #                                  AFFINE                                    #
@@ -364,7 +364,7 @@ def alignment_iteration(
 
                 if __step_output_exists(input_name, step_dir, transform_avg, False):
                     logger.info(
-                        "%s: found existing work for %s ", step_name, input_name
+                        "%s: found cached result for %s ", step_name, input_name
                     )
                 else:
                     logger.info("%s: processing %s", step_name, input_name)

@@ -2,6 +2,7 @@
 """
 
 import argparse
+import hashlib
 import inspect
 import os
 
@@ -140,6 +141,13 @@ def dice_coefficient(image_1, image_2, exclude_labels=[0]):
 def package_path():
     """Returns the absolute path to this package base directory"""
     return os.path.dirname(inspect.getfile(bifrost))
+
+
+def sha256(byte_string):
+    """Returns the hex sha256 digest of a byte encoded string"""
+    digester = hashlib.sha256()
+    digester.update(byte_string)
+    return digester.hexdigest()
 
 
 class SubcommandHelpFormatter(argparse.RawDescriptionHelpFormatter):
