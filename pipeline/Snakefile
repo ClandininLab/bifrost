@@ -1,6 +1,49 @@
+# ================================================================================================== #
+#                                              PREAMBLE                                              #
+# ================================================================================================== #
+from warnings import warn
+
 SAMPLES, CHANNELS, IMAGES = glob_wildcards("data/{sample}/{channel}/{image}.nii")
 
-MAX_THREADS = 16
+BOOLEAN_PARAMETERS = {
+    "skip_affine",
+    "skip_syn",
+    "skip_synthmorph",
+    "mirror_warp",
+    "keep_intermediates",
+    "mirror"
+}
+
+# Some parameters are already used by snakemake or do not make sense to use in
+# this context and are thus ignored while parsing user-configurable parameters
+IGNORED_PARAMETERS = {"log", "force", "verbose", "preemptible"}
+
+
+def format_configurable_parameters(rule_name):
+    """Parses and formats the user-configurable parameters specified in the config file for a given rule"""
+    arg_str = ""
+
+    for param_name, param_value in config['parameters'][rule_name].items():
+        if param_name in IGNORED_PARAMETERS:
+            warn(
+                f"Ignored parameter '{param_name}' encountered while formatting user-configurable parameters for rule {rule_name}"
+            )
+            continue
+        if param_name in BOOLEAN_PARAMETERS:
+            if param_value is not None:
+                arg_str += f"--{param_name} "
+        else:
+            if param_value is not None:
+                arg_str += f"--{param_name} {param_value} "
+
+    return arg_str
+
+configfile: "config.yaml"
+
+# ================================================================================================== #
+#                                               RULES                                                #
+# ================================================================================================== #
+
 
 rule all:
     input:
@@ -22,9 +65,13 @@ rule build_template:
     resources:
         runtime="7d",
     threads:
-        MAX_THREADS
+        config['resources']['max_threads']
     shell:
-        "bifrost build_template -f --mirror --log {log} --input {input} --output results"
+        "bifrost build_template -f "
+        "--log {log} "
+        " --input {input} "
+        "--output results "
+        f"{format_configurable_parameters('build_template')}"
 
 
 rule register_template_to_fda:
@@ -38,15 +85,14 @@ rule register_template_to_fda:
     resources:
         runtime="1d",
     threads:
-        MAX_THREADS
+        config['resources']['max_threads']
     shell:
         "bifrost register -f "
         "--log {log} "
-        "--mirror_warp "
-        "--moving_clip_limit -1 "
         "{input.template} "
         "{input.fda} "
         "results/template_to_fda "
+        f"{format_configurable_parameters('register_template_to_fda')}"
 
 
 
@@ -61,15 +107,14 @@ rule register_structural_images_to_template:
     resources:
         runtime="1d",
     threads:
-        MAX_THREADS
+        config['resources']['max_threads']
     shell:
         "bifrost register -f "
         "--log {log} "
-        "--skip_synthmorph "
-        "--moving_clip_limit -1 "
         "{input.image} "
         "{input.template} "
-        "results/structural_images_to_template/{wildcards.sample}"
+          "results/structural_images_to_template/{wildcards.sample} "
+        f"{format_configurable_parameters('register_structural_images_to_template')}"
 
 
 
@@ -84,7 +129,7 @@ rule transform_dependent_images_to_template:
     resources:
         runtime="1d",
     threads:
-        4
+        min(4,  config['resources']['max_threads'])
     shell:
         "bifrost transform "
         "--log {log} "
@@ -104,7 +149,7 @@ rule transform_dependent_images_to_fda:
     resources:
         runtime="1d",
     threads:
-        4
+        min(4,  config['resources']['max_threads'])
     shell:
         "bifrost transform "
         "--log {log} "
