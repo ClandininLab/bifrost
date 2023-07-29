@@ -35,10 +35,11 @@ parameters:
   # no user configurable parameters
   transform_dependent_images_to_fda:
 
-# NOTE: all other resource declarations are to be made in the cluster profile
+
+# max threads available to bifrost, you should set this value to the number of
+# cores available in the nodes on your cluster
+#
+# NOTE: all other resource declarations are to be made in the cluster profile.
 # threads are declared separately to allow requested threads to be turned down
 # for less computationally-intensive rules
-resources:
-  # max threads available to bifrost, you should set this value to the number of
-  # cores available in the nodes on your cluster
-  max_threads: 16
+max_threads: 16

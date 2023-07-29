@@ -65,7 +65,7 @@ rule build_template:
     resources:
         runtime="7d",
     threads:
-        config['resources']['max_threads']
+        config['max_threads']
     shell:
         "bifrost build_template -f "
         "--log {log} "
@@ -85,7 +85,7 @@ rule register_template_to_fda:
     resources:
         runtime="1d",
     threads:
-        config['resources']['max_threads']
+        config['max_threads']
     shell:
         "bifrost register -f "
         "--log {log} "
@@ -107,7 +107,7 @@ rule register_structural_images_to_template:
     resources:
         runtime="1d",
     threads:
-        config['resources']['max_threads']
+        config['max_threads']
     shell:
         "bifrost register -f "
         "--log {log} "
@@ -129,7 +129,7 @@ rule transform_dependent_images_to_template:
     resources:
         runtime="1d",
     threads:
-        min(4,  config['resources']['max_threads'])
+        min(4,  config['max_threads'])
     shell:
         "bifrost transform "
         "--log {log} "
@@ -149,7 +149,7 @@ rule transform_dependent_images_to_fda:
     resources:
         runtime="1d",
     threads:
-        min(4,  config['resources']['max_threads'])
+        min(4,  config['max_threads'])
     shell:
         "bifrost transform "
         "--log {log} "

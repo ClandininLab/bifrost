@@ -71,12 +71,12 @@ statistically representative "mean image" from a series of individual images
 which often registers more accurately to a reference template than the
 individual images.
 
-See the interactive help for each subcommand for detailed usage intructions.
+See the interactive help for each subcommand for detailed usage instructions.
 
 ## The BIFROST pipeline
 
 The BIFROST pipeline registers images from a dataset of $N$ samples with $M$
-channels and an arbitrary number of timepoints into the space of the Functional
+channels and an arbitrary number of time points into the space of the Functional
 Drosophila Atlas (FDA) which was published as part of the BIFROST paper. We provide an
 implementation of the BIFROST pipeline in the form of an easy to use
 [Snakemake](https://snakemake.readthedocs.io/en/stable/) workflow that
@@ -104,7 +104,7 @@ The degree of parallelism increases dramatically for more realistic datasets. Fo
 ![The dependency DAG for the demo dataset](assets/demo_dag.svg)
 
 For a dataset with $N$ samples, $M$ channels each of which has $K$ dependent
-images there are $2 + N + 2 N K M$ steps in the pipelin. Up to $1 + N K M$ steps
+images there are $2 + N + 2 N K M$ steps in the pipeline. Up to $1 + N K M$ steps
 can proceed in parallel. As each step can take on the order of an hour to
 complete, serial execution would be prohibitively slow. The beauty of Snakemake
 is that it transparently orchestrates the distributed execution of the pipeline
@@ -116,7 +116,7 @@ on your favorite cluster/cloud platform.
 You must provide your data as NIfTI images with accurate metadata. NIfTI
 metadata includes a specification of the transformation between voxel-space and
 anatomical space, which is used during registration. In our experience the vast
-majority of registration falures are caused by incorrect metadata.
+majority of registration failures are caused by incorrect metadata.
 
 In order to be correctly parsed by the Snakemake workflow you must follow a
 prescribed directory structure. Under your top-level dataset directory there
@@ -218,36 +218,67 @@ example
     └── FDA.nii
 ```
 
-### Usage
+### Running the pipeline
 
 To use the pipeline you must install the `bifrost` using `pip` _and_ clone this
 repository to a location of your choice. This is because `snakemake` must be
 executed from within a directory containing a `Snakefile`.
 
+#### Configuration
+
+User configurable `bifrost` parameters are exposed via a mandatory configuration
+file. The config file must be named `config.yaml` and placed in your dataset
+directory (alongside `data` and `templates`). An [example config file](pipeline/example_config.yaml)
+with good defaults is provided.
+
+You can modify the parameters by editing the config file or using snakemake's
+`--config` argument. For example, you could override the default value for `affine_steps` with
+
+```
+snakemake --cores 16 --directory /path/to/your/dataset --config "parameters={'build_template': {'affine_steps': 1}}"
+```
+
+Refer to `bifrost --help` for details about the parameters.
+
+The configuration also contains a max threads declaration which you should set to an appropriate value.
+
 #### Single-node execution
 
-To run the pipeline in single-node mode using up to 16 cores, run the following command
+To execute the pipeline in single-node mode using up to 24 cores, run the following command
 from within the `pipeline` directory of this repo.
 
 ```
-snakemake --cores 16 --directory /path/to/your/dataset
+snakemake --cores 24 --config max_threads=24 --directory /path/to/your/dataset
 ```
 
 #### Distributed execution
 
-To execute the pipeline on a Slurm cluster modify the `MAX_THREADS` value in
-`pipeline/Snakefile` and the account, partition and memory values in
-`pipeline/cluster_profile/config.yaml` as needed.
+For Slurm execution an additional configuration file specifying account,
+partition and requested memory allocation is required. This file is referred to
+as a "profile" by snakemake. An [example profile file](pipeline/cluster_profile/config.yaml) is provided.
+Unlike the main configuration file which must be placed in your dataset directory, the profile
+file should stay where it is. The requested CPU allocation is specified separately by the max threads
+declaration in the main configuration file.
 
 The pipeline can then be executed using at most 64 jobs in parallel by running the following command from within
 the `pipeline` directory of this repo
 
+Running the following command from within the `pipeline` directory of this repo
+would execute the the pipeline on nodes with 16 CPUs and 128GB of memory using as
+many as 64 simultaneous jobs.
+
 ```
-snakemake --slurm --jobs 64 --profile cluster_profile --directory /path/to/your/dataset
+snakemake --slurm --jobs 64 --profile cluster_profile --config max_threads=16 --directory /path/to/your/dataset
 ```
 
-You can submit an unlimited number of jobs in parallel by setting `--jobs all`
-if you dare tempt the wrath of your cluster admin.
+In this scenario, if there were more than 64 tasks that could be be
+executed simultaneously (this depends only on the dependency graph), snakemake
+would submit 64 jobs to the Slurm scheduler and then wait for jobs to finish
+before submitting more.
+
+You can remove this limit and instruct snakemake to submit all available tasks
+to the scheduler by setting `--jobs all` if you dare tempt the wrath of your
+cluster administrator.
 
 Please refer to the Snakemake docs for instructions on how to execute the
 pipeline on
