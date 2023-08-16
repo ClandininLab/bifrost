@@ -35,7 +35,9 @@ pip install git+ssh://git@github.com/ClandininLab/bifrost.git
 Installation takes about two minutes on a computer with a fast internet
 connection and an empty `pip` cache.
 
-# Docker
+## Docker
+
+As an alternative to local installation, you may use docker.
 
 Build the BIFROST docker image by running
 
@@ -53,7 +55,7 @@ docker run --name bifrost --rm -it bifrost:latest bash
 
 We provide a `bifrost` executable providing direct access to our tooling and a
 [Snakemake](https://snakemake.readthedocs.io/en/stable/) workflow which
-implements the BIFROST pipeline, handling plumbing and distributed execution.
+implements the BIFROST pipeline, handling plumbing and (optionally) distributed execution.
 
 ## Using the executable
 
@@ -220,11 +222,62 @@ example
 
 ### Running the pipeline
 
-To use the pipeline you must install the `bifrost` using `pip` _and_ clone this
-repository to a location of your choice. This is because `snakemake` must be
-executed from within a directory containing a `Snakefile`.
+To use the pipeline you must install the `bifrost` package using `pip` _and_ clone this
+repository to a location of your choice to obtain the `Snakefile` defining the
+pipeline and associated configuration files.
 
-#### Configuration
+By default, `snakemake` expects to be executed from a "workflow" directory
+containing a `Snakefile`. The bifrost "workflow" directory is named `pipeline`.
+If you do not wish to execute `snakemake` from a "workflow" directory, you will
+have to set the `--snakefile` and `--configfile` arguments.
+
+#### Single-node execution
+
+To execute the pipeline in single-node mode using up to 24 cores, run the following command
+from within the `pipeline` directory of this repo.
+
+```
+snakemake --cores 24 --config max_threads=24 --directory /path/to/your/dataset
+```
+
+#### Distributed execution
+
+
+The pipeline can then be executed using at most 64 jobs in parallel by running the following command from within
+the `pipeline` directory of this repo
+
+Running the following command from within the `pipeline` directory of this repo
+would execute the the pipeline on nodes with 16 CPUs and 128GB of memory (see
+[configuration](#configuring-the-pipeline)) using as many as 64 simultaneous
+jobs.
+
+```
+snakemake --slurm --jobs 64 --profile cluster_profile --config max_threads=16 --directory /path/to/your/dataset
+```
+
+In this scenario, if there were more than 64 tasks that could be be
+executed simultaneously (this depends only on the dependency graph), snakemake
+would submit 64 jobs to the Slurm scheduler and then wait for jobs to finish
+before submitting more.
+
+You can remove this limit and instruct snakemake to submit all available tasks
+to the scheduler by setting `--jobs all` if you dare tempt the wrath of your
+cluster administrator.
+
+The `snakemake` process simply coordinates jobs and does no heavy lifting
+itself. It must be executed from an environment containing slurm executables, so
+run it on a login node or as its own job. An example sbatch file is provided in
+`pipeline`.
+
+Please refer to the Snakemake docs for instructions on how to execute the
+pipeline on
+[cloud](https://snakemake.readthedocs.io/en/stable/executing/cloud.html)
+resources and other
+[cluster](https://snakemake.readthedocs.io/en/stable/executing/cluster.html)
+scheduling systems.
+
+
+### Configuring the pipeline
 
 User configurable `bifrost` parameters are exposed via a mandatory configuration
 file. The config file must be named `config.yaml` and placed in your dataset
@@ -242,57 +295,28 @@ Refer to `bifrost --help` for details about the parameters.
 
 The configuration also contains a max threads declaration which you should set to an appropriate value.
 
-#### Single-node execution
-
-To execute the pipeline in single-node mode using up to 24 cores, run the following command
-from within the `pipeline` directory of this repo.
-
-```
-snakemake --cores 24 --config max_threads=24 --directory /path/to/your/dataset
-```
-
-#### Distributed execution
+#### Slurm configuration
 
 For Slurm execution an additional configuration file specifying account,
 partition and requested memory allocation is required. This file is referred to
-as a "profile" by snakemake. An [example profile file](pipeline/cluster_profile/config.yaml) is provided.
-Unlike the main configuration file which must be placed in your dataset directory, the profile
-file should stay where it is. The requested CPU allocation is specified separately by the max threads
+as a "profile" by snakemake. An [example profile file](pipeline/cluster_profilfe/config.yaml) is provided.
+
+Unlike the main configuration file which must be placed in your dataset
+directory (or specified with `--configfile`), the profile file must reside in a
+directory named something like `cluster_profile` with the workflow directory.
+i.e. if you use the `pipeline` directory in the repo as your "workflow"
+directory, it should stay where it is.
+
+The requested CPU allocation is specified separately by the max threads
 declaration in the main configuration file.
-
-The pipeline can then be executed using at most 64 jobs in parallel by running the following command from within
-the `pipeline` directory of this repo
-
-Running the following command from within the `pipeline` directory of this repo
-would execute the the pipeline on nodes with 16 CPUs and 128GB of memory using as
-many as 64 simultaneous jobs.
-
-```
-snakemake --slurm --jobs 64 --profile cluster_profile --config max_threads=16 --directory /path/to/your/dataset
-```
-
-In this scenario, if there were more than 64 tasks that could be be
-executed simultaneously (this depends only on the dependency graph), snakemake
-would submit 64 jobs to the Slurm scheduler and then wait for jobs to finish
-before submitting more.
-
-You can remove this limit and instruct snakemake to submit all available tasks
-to the scheduler by setting `--jobs all` if you dare tempt the wrath of your
-cluster administrator.
-
-Please refer to the Snakemake docs for instructions on how to execute the
-pipeline on
-[cloud](https://snakemake.readthedocs.io/en/stable/executing/cloud.html)
-resources and other
-[cluster](https://snakemake.readthedocs.io/en/stable/executing/cluster.html)
-scheduling systems.
 
 
 # Demo
 
 The demo dataset is included in this repository. Install [git
 lfs](https://git-lfs.com/) prior to cloning this repository to download it, or
-install it and run `git lfs pull` if you have already cloned the repo.
+install it and run `git lfs pull` from within the repository if you have already
+cloned the repo. This expands the `demo_dataset.tar.gz` stub file.
 
 Once you have unpacked `demo_dataset.tar.gz` to a location of your choice, you
 can run the demo by `cd`ing to `pipeline/` and running
