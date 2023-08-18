@@ -17,10 +17,9 @@ guaranteed when running in single-threaded mode.
 ## Software requirements
 
 `bifrost` fully supports *nix and was tested on CentOS 7 running Python 3.9.0.
-Windows and MacOS are not officially supported, although it is likely possible
-to install `bifrost` on these platforms. A
-[docker](https://docs.docker.com/get-started/) image is provided which can be
-used on all platforms.
+It may be possible to install `bifrost` on Windows and MacOs but these platforms
+are not officially supported. A [docker](https://docs.docker.com/get-started/)
+image is provided which can be used on all platforms.
 
 Python >=3.8  is required.
 
@@ -53,14 +52,14 @@ docker run --name bifrost --rm -it bifrost:latest bash
 
 # Usage
 
-We provide a `bifrost` executable providing direct access to our tooling and a
-[Snakemake](https://snakemake.readthedocs.io/en/stable/) workflow which
-implements the BIFROST pipeline, handling plumbing and (optionally) distributed execution.
+There are two ways to use `bifrost`. You can directly interface with our tooling
+via the `bifrost` executable or you can use the provided [Snakemake](https://snakemake.readthedocs.io/en/stable/)
+implementation of the BIFROST pipeline which handles plumbing and (optionally) distributed execution.
 
 ## Using the executable
 
-The `bifrost` executable, which is installed by `pip`, provides interfaces to all BIFROST logic.
-There are  three subcommands:
+The `bifrost` executable (installed by `pip`) provides interfaces to all BIFROST logic.
+There are three subcommands:
 
 - `bifrost register`
 - `bifrost transform`
@@ -135,7 +134,7 @@ motion-corrected and perfectly aligned to it.
 Some examples:
 
 
-The toy dataset used to generate the first image:
+The toy dataset used to generate the first dependency graph image:
 ```
 toy_dataset
 ├── data
@@ -151,7 +150,7 @@ toy_dataset
     └── FDA.nii
 ```
 
-The demo dataset:
+The demo dataset (second dependency graph image):
 ```
 demo_dataset
 ├── data
@@ -226,25 +225,23 @@ To use the pipeline you must install the `bifrost` package using `pip` _and_ clo
 repository to a location of your choice to obtain the `Snakefile` defining the
 pipeline and associated configuration files.
 
-By default, `snakemake` expects to be executed from a "workflow" directory
-containing a `Snakefile`. The bifrost "workflow" directory is named `pipeline`.
-If you do not wish to execute `snakemake` from a "workflow" directory, you will
+By default, `snakemake` expects to be executed from a workflow directory
+containing a `Snakefile`. The bifrost workflow directory is named `pipeline`.
+If you do not wish to execute `snakemake` from a workflow directory, you will
 have to set the `--snakefile` and `--configfile` arguments.
 
 #### Single-node execution
 
-To execute the pipeline in single-node mode using up to 24 cores, run the following command
-from within the `pipeline` directory of this repo.
+To execute the pipeline in single-node mode using up to 24 cores on the node
+with each job using up to 8 cores, run the following command from within the `pipeline`
+directory of this repo.
 
 ```
-snakemake --cores 24 --config max_threads=24 --directory /path/to/your/dataset
+snakemake --cores 24 --config max_threads=8 --directory /path/to/your/dataset
 ```
 
 #### Distributed execution
 
-
-The pipeline can then be executed using at most 64 jobs in parallel by running the following command from within
-the `pipeline` directory of this repo
 
 Running the following command from within the `pipeline` directory of this repo
 would execute the the pipeline on nodes with 16 CPUs and 128GB of memory (see
@@ -262,12 +259,11 @@ before submitting more.
 
 You can remove this limit and instruct snakemake to submit all available tasks
 to the scheduler by setting `--jobs all` if you dare tempt the wrath of your
-cluster administrator.
+cluster administrator. Use of `--jobs all` is inadvisable in most scenarios.
 
 The `snakemake` process simply coordinates jobs and does no heavy lifting
 itself. It must be executed from an environment containing slurm executables, so
-run it on a login node or as its own job. An example sbatch file is provided in
-`pipeline`.
+run it on a login node or as its own job. An [example sbatch script](pipeline/example_sbatch.sbatch) is provided.
 
 Please refer to the Snakemake docs for instructions on how to execute the
 pipeline on
@@ -293,7 +289,8 @@ snakemake --cores 16 --directory /path/to/your/dataset --config "parameters={'bu
 
 Refer to `bifrost --help` for details about the parameters.
 
-The configuration also contains a max threads declaration which you should set to an appropriate value.
+The configuration also contains a max threads declaration which you should set
+to an appropriate value for your hardware.
 
 #### Slurm configuration
 
@@ -304,7 +301,7 @@ as a "profile" by snakemake. An [example profile file](pipeline/cluster_profilfe
 Unlike the main configuration file which must be placed in your dataset
 directory (or specified with `--configfile`), the profile file must reside in a
 directory named something like `cluster_profile` with the workflow directory.
-i.e. if you use the `pipeline` directory in the repo as your "workflow"
+i.e. if you use the `pipeline` directory in the repo as your workflow
 directory, it should stay where it is.
 
 The requested CPU allocation is specified separately by the max threads
