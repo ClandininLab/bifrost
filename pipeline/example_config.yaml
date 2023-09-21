@@ -7,7 +7,7 @@ parameters:
     syn_steps: null
     gradient_step: null
     preprocessing: 'CLAHE'
-    # mirror is a boolean ("store_true" action) parameter, any non-null value will be parsed as True
+    # mirror is a boolean ("store_true" action) parameter, any non-null non-boolean values will be parsed as true
     mirror: true
 
   # NOTE: the --downsample_to parameter is ommitted from all registration steps
@@ -17,16 +17,17 @@ parameters:
     clahe_kernel_size: null
     moving_clip_limit: -1
     fixed_clip_limit: -1
-    # mirror_warp is a boolean parameter, any non-null value will be parsed as True
+    # mirror_warp is a boolean parameter, any non-null non-boolean values will be parsed as true
     mirror_warp: true
 
   register_structural_images_to_template:
     clahe_kernel_size: null
     moving_clip_limit: -1
     fixed_clip_limit: -1
-    # mirror_warp is a boolean ("store_true" action) parameter, any non-null value will be parsed as True
-    mirror_warp: null
-    # skip_synthmorph is a boolean parameter. for this step you probably want to leave set to True
+    # mirror_warp is a boolean ("store_true" action) parameter, any non-null non-boolean values will be parsed as true
+    mirror_warp: false
+    # skip_synthmorph is a boolean ("store_true" action) parameter, any non-null non-boolean values will be parsed as true
+    # for this step you probably want to leave set to True
     skip_synthmorph: true
 
   # no user configurable parameters
@@ -35,11 +36,10 @@ parameters:
   # no user configurable parameters
   transform_dependent_images_to_fda:
 
-
-# max threads available to bifrost, you should set this value to the number of
-# cores available in the nodes on your cluster
-#
-# NOTE: all other resource declarations are to be made in the cluster profile.
+# NOTE: all other resource declarations are to be made in the cluster profile
 # threads are declared separately to allow requested threads to be turned down
 # for less computationally-intensive rules
-max_threads: 16
+resources:
+  # max threads available to bifrost, you should set this value to the number of
+  # cores available in the nodes on your cluster
+  max_threads: 16

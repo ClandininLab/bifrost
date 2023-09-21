@@ -18,7 +18,6 @@ BOOLEAN_PARAMETERS = {
 # this context and are thus ignored while parsing user-configurable parameters
 IGNORED_PARAMETERS = {"log", "force", "verbose", "preemptible"}
 
-
 def format_configurable_parameters(rule_name):
     """Parses and formats the user-configurable parameters specified in the config file for a given rule"""
     arg_str = ""
@@ -26,12 +25,20 @@ def format_configurable_parameters(rule_name):
     for param_name, param_value in config['parameters'][rule_name].items():
         if param_name in IGNORED_PARAMETERS:
             warn(
-                f"Ignored parameter '{param_name}' encountered while formatting user-configurable parameters for rule {rule_name}"
+                f"Ignored parameter '{param_name}' encountered while formatting user-configurable parameters for rule '{rule_name}'"
             )
             continue
         if param_name in BOOLEAN_PARAMETERS:
-            if param_value is not None:
+            if param_value is not None and param_value != False:
                 arg_str += f"--{param_name} "
+            if param_value is not None and not isinstance(param_value, bool):
+                warn(
+                    (
+                        f"non-null non-boolean value '{param_value}' encountered for boolean parameter '{param_name}' while "
+                        f"formatting user-configurable parameters for rule '{rule_name}'."
+                        "This value will be parsed as true."
+                    )
+                )
         else:
             if param_value is not None:
                 arg_str += f"--{param_name} {param_value} "
@@ -65,7 +72,7 @@ rule build_template:
     resources:
         runtime="7d",
     threads:
-        config['max_threads']
+        config['resources']['max_threads']
     shell:
         "bifrost build_template -f "
         "--log {log} "
@@ -85,7 +92,7 @@ rule register_template_to_fda:
     resources:
         runtime="1d",
     threads:
-        config['max_threads']
+        config['resources']['max_threads']
     shell:
         "bifrost register -f "
         "--log {log} "
@@ -107,7 +114,7 @@ rule register_structural_images_to_template:
     resources:
         runtime="1d",
     threads:
-        config['max_threads']
+        config['resources']['max_threads']
     shell:
         "bifrost register -f "
         "--log {log} "
@@ -129,7 +136,7 @@ rule transform_dependent_images_to_template:
     resources:
         runtime="1d",
     threads:
-        min(4,  config['max_threads'])
+        min(4,  config['resources']['max_threads'])
     shell:
         "bifrost transform "
         "--log {log} "
@@ -149,7 +156,7 @@ rule transform_dependent_images_to_fda:
     resources:
         runtime="1d",
     threads:
-        min(4,  config['max_threads'])
+        min(4,  config['resources']['max_threads'])
     shell:
         "bifrost transform "
         "--log {log} "
