@@ -30,11 +30,11 @@ parameters:
     # for this step you probably want to leave set to True
     skip_synthmorph: true
 
-  # no user configurable parameters
   transform_dependent_images_to_template:
+    apply_preprocessing: false
 
-  # no user configurable parameters
   transform_dependent_images_to_fda:
+    apply_preprocessing: false
 
 # NOTE: all other resource declarations are to be made in the cluster profile
 # threads are declared separately to allow requested threads to be turned down

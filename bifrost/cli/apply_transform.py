@@ -17,7 +17,7 @@ import voxelmorph as vxm
 from skimage.exposure import equalize_adapthist
 
 from bifrost.io import md5sum, read_affine, read_image
-from bifrost.util import threshold_image, transpose_image, update_image_array
+from bifrost.util import transpose_image, update_image_array
 
 # hide GPUs
 os.environ["CUDA_VISIBLE_DEVICES"] = ""
@@ -141,7 +141,7 @@ def transform(args):
         #                                  RESCALE                                   #
         # ========================================================================== #
 
-        if not args.label_image:
+        if args.apply_preprocessing and not args.label_image:
             logger.info("Rescaling images")
             logger.info(
                 "Moving intensity range: %s - %s", moving_img.min(), moving_img.max()
@@ -153,20 +153,17 @@ def transform(args):
         #                          HISTOGRAM EQUALIZATION                            #
         # ========================================================================== #
 
-        if not args.label_image:
+        if args.apply_preprocessing and not args.label_image:
             if h5_handle.attrs["args.moving_clip_limit"] > 0:
                 logger.info(
                     "Running moving CLAHE. Clip limit: %s",
                     h5_handle.attrs["args.moving_clip_limit"],
                 )
 
-                kernel_size = None
-                if "args.clahe_kernel_size" in h5_handle.attrs:
-                    kernel_size = (h5_handle.attrs["args.clahe_kernel_size"],)
-
                 moving_clahe = equalize_adapthist(
                     moving_img.numpy(),
-                    kernel_size=kernel_size,
+                    # get won't throw a key error if args.clahe_kernel_size doesn't exist (it might not)
+                    kernel_size=h5_handle.attrs.get("args.clahe_kernel_size"),
                     clip_limit=h5_handle.attrs["args.moving_clip_limit"],
                 )
 

@@ -61,7 +61,7 @@ def main():
         "See https://scikit-image.org/docs/stable/api/skimage.exposure.html#skimage.exposure.equalize_hist for details"
     )
     parser_register.add_argument(
-        "--clahe_kernel_size", help=clahe_kernel_size_help, default=None
+        "--clahe_kernel_size", help=clahe_kernel_size_help, default=None, type=int
     )
 
     fixed_clip_limit_help = (
@@ -138,6 +138,14 @@ def main():
     label_image_help = "Set if image is a label image (ROIs). Uses interpolation methods that preserve labels"
     parser_transform.add_argument(
         "--label_image", help=label_image_help, action="store_true"
+    )
+
+    apply_preprocessing_help = (
+        "Set this to exactly reproduce the net result of the original registration. "
+        "By default only the spatial transformation is applied, setting this option includes the preprocessing steps."
+    )
+    parser_transform.add_argument(
+        "--apply_preprocessing", help=apply_preprocessing_help, action="store_true"
     )
 
     result_name_help = (
