@@ -437,7 +437,7 @@ version.
 This transform was obtain using the thresholded FDA. It can be applied to images
 registered to the unthresholded FDA but is "undefined" outside of the support of the thresholded image.
 
-- [thresholded FDA (md5sum bf1de994cf8ade80034cbdcd8509ccb3) to JRC 2018 central brain female (md5sum 5d3819b4f563bc1dcbe8a0d96063d62e)](https://drive.google.com/file/d/1pT4VYq0xaQoNVEsn7sC_1kZ1WQ8hNlef/view?usp=sharing)
+- [thresholded FDA to JRC 2018 central brain female](https://drive.google.com/file/d/1pT4VYq0xaQoNVEsn7sC_1kZ1WQ8hNlef/view?usp=sharing)
 
 ### To other reference brains
 
