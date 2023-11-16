@@ -6,10 +6,8 @@ Template building and multi-modal registration
 
 ## Hardware Requirements
 
-Image registration is a memory-intensive computation, with memory
-requirements scaling roughly linearly with the number of voxels in your image.
-For example, 128 GB of memory is sufficient for 32-bit images of shape (1652,
-768, 479).
+Image registration is a memory-intensive computation.  For example, it takes on the order of 128G of
+memory to register 32-bit images of shape (1652, 768, 479).
 
 `bifrost` makes use of all available cores. Note that determinism is only
 guaranteed when running in single-threaded mode.
@@ -17,7 +15,7 @@ guaranteed when running in single-threaded mode.
 ## Software requirements
 
 `bifrost` fully supports *nix and was tested on CentOS 7 running Python 3.9.0.
-It may be possible to install `bifrost` on Windows and MacOs but these platforms
+It may be possible to install `bifrost` on Windows and MacOS but these platforms
 are not officially supported. A [docker](https://docs.docker.com/get-started/)
 image is provided which can be used on all platforms.
 
@@ -78,7 +76,7 @@ See the interactive help for each subcommand for detailed usage instructions.
 
 The BIFROST pipeline registers images from a dataset of $N$ samples with $M$
 channels and an arbitrary number of time points into the space of the Functional
-Drosophila Atlas (FDA) which was published as part of the BIFROST paper. We provide an
+Drosophila Atlas (FDA) which was published as part of the BIFROST paper (available [below](#artifacts)). We provide an
 implementation of the BIFROST pipeline in the form of an easy to use
 [Snakemake](https://snakemake.readthedocs.io/en/stable/) workflow that
 transparently scales from single-node to cluster execution.
@@ -114,10 +112,9 @@ on your favorite cluster/cloud platform.
 
 ### Data requirements
 
-You must provide your data as NIfTI images with accurate metadata. NIfTI
-metadata includes a specification of the transformation between voxel-space and
-anatomical space, which is used during registration. In our experience the vast
-majority of registration failures are caused by incorrect metadata.
+You must provide your data as NIfTI images with intact metadata. Take care to
+match the affine to that of the FDA you use. In our experience the vast majority
+of registration failures are caused by incorrect metadata.
 
 In order to be correctly parsed by the Snakemake workflow you must follow a
 prescribed directory structure. Under your top-level dataset directory there
@@ -166,30 +163,10 @@ demo_dataset
 │   │   ├── green
 │   │   │   └── lc11.nii
 │   │   └── structural_image.nii
-│   ├── fly_4
-│   │   ├── green
-│   │   │   └── lc11.nii
-│   │   └── structural_image.nii
-│   ├── fly_5
-│   │   ├── green
-│   │   │   └── lc11.nii
-│   │   └── structural_image.nii
-│   ├── fly_6
-│   │   ├── green
-│   │   │   └── lc11.nii
-│   │   └── structural_image.nii
-│   ├── fly_7
-│   │   ├── green
-│   │   │   └── lc11.nii
-│   │   └── structural_image.nii
-│   ├── fly_8
-│   │   ├── green
-│   │   │   └── lc11.nii
-│   │   └── structural_image.nii
-│   └── fly_9
-│       ├── green
-│       │   └── lc11.nii
-│       └── structural_image.nii
+│   └── fly_4
+│       ├── green
+│       │   └── lc11.nii
+│       └── structural_image.nii
 └── templates
     └── FDA.nii
 ```
@@ -308,6 +285,54 @@ The requested CPU allocation is specified separately by the max threads
 declaration in the main configuration file.
 
 
+### Processing time series imagery
+
+Time series data can be processed by storing each sample as its own image. Note
+that you can have any number of dependent images in each channel. 4D NIfTIs are
+not supported (but contributions are welcome!).
+
+For instance:
+
+```
+time_series_example
+├── data
+│   ├── animal_1
+│   │   ├── red_channel
+│   │   │   ├── tp_1.nii
+│   │   │   ├── tp_2.nii
+│   │   │   ├── tp_3.nii
+│   │   │   ├── tp_4.nii
+│   │   │   └── tp_5.nii
+│   │   ├── green_channel
+│   │   │   ├── tp_1.nii
+│   │   │   ├── tp_3.nii
+│   │   │   └── tp_5.nii
+│   │   └── structural_image.nii
+│   ├── animal_2
+│   │   ├── red_channel
+│   │   │   ├── tp_1.nii
+│   │   │   ├── tp_2.nii
+│   │   │   ├── tp_3.nii
+│   │   │   ├── tp_4.nii
+│   │   │   └── tp_5.nii
+│   │   ├── green_channel
+│   │   │   ├── tp_1.nii
+│   │   │   ├── tp_3.nii
+│   │   │   └── tp_5.nii
+│   │   └── structural_image.nii
+└── templates
+    └── FDA.nii
+```
+
+As each sample will be submitted as a separate job to the scheduler, long time
+series will stress the scheduler and you are advised not to use `--jobs all` and
+to consider grouping multiple samples into each job.
+
+Here are some resources on how to do that:
+- https://snakemake.readthedocs.io/en/stable/executing/grouping.html
+- https://github.com/snakemake/snakemake/issues/872
+- https://github.com/jdblischak/smk-simple-slurm/tree/main/examples/job-grouping
+
 # Demo
 
 The demo dataset is included in this repository. Install [git
@@ -322,7 +347,7 @@ can run the demo by `cd`ing to `pipeline/` and running
 snakemake --cores all --directory /path/to/demo_dataset
 ```
 
-This takes about 3 minutes to run on a node with 16 cores.
+This takes about 7 minutes to run on a node with 16 cores.
 
 If all went well, the output of `tree /path/to/demo_dataset` will be
 
@@ -344,57 +369,22 @@ demo_dataset
 │   ├── fly_4
 │   │   ├── green
 │   │   │   └── lc11.nii
-│   │   └── structural_image.nii
-│   ├── fly_5
-│   │   ├── green
-│   │   │   └── lc11.nii
-│   │   └── structural_image.nii
-│   ├── fly_6
-│   │   ├── green
-│   │   │   └── lc11.nii
-│   │   └── structural_image.nii
-│   ├── fly_7
-│   │   ├── green
-│   │   │   └── lc11.nii
-│   │   └── structural_image.nii
-│   ├── fly_8
-│   │   ├── green
-│   │   │   └── lc11.nii
-│   │   └── structural_image.nii
-│   └── fly_9
-│       ├── green
-│       │   └── lc11.nii
-│       └── structural_image.nii
+│   └── └── structural_image.nii
 ├── logs
 │   ├── build_template.log
 │   ├── register_structural_images_to_template_fly_1.log
 │   ├── register_structural_images_to_template_fly_2.log
 │   ├── register_structural_images_to_template_fly_3.log
 │   ├── register_structural_images_to_template_fly_4.log
-│   ├── register_structural_images_to_template_fly_5.log
-│   ├── register_structural_images_to_template_fly_6.log
-│   ├── register_structural_images_to_template_fly_7.log
-│   ├── register_structural_images_to_template_fly_8.log
-│   ├── register_structural_images_to_template_fly_9.log
 │   ├── register_template_to_fda.log
 │   ├── transform_dependent_images_to_fda_fly_1_green_lc11.log
 │   ├── transform_dependent_images_to_fda_fly_2_green_lc11.log
 │   ├── transform_dependent_images_to_fda_fly_3_green_lc11.log
 │   ├── transform_dependent_images_to_fda_fly_4_green_lc11.log
-│   ├── transform_dependent_images_to_fda_fly_5_green_lc11.log
-│   ├── transform_dependent_images_to_fda_fly_6_green_lc11.log
-│   ├── transform_dependent_images_to_fda_fly_7_green_lc11.log
-│   ├── transform_dependent_images_to_fda_fly_8_green_lc11.log
-│   ├── transform_dependent_images_to_fda_fly_9_green_lc11.log
 │   ├── transform_dependent_images_to_template_fly_1_green_lc11.log
 │   ├── transform_dependent_images_to_template_fly_2_green_lc11.log
 │   ├── transform_dependent_images_to_template_fly_3_green_lc11.log
-│   ├── transform_dependent_images_to_template_fly_4_green_lc11.log
-│   ├── transform_dependent_images_to_template_fly_5_green_lc11.log
-│   ├── transform_dependent_images_to_template_fly_6_green_lc11.log
-│   ├── transform_dependent_images_to_template_fly_7_green_lc11.log
-│   ├── transform_dependent_images_to_template_fly_8_green_lc11.log
-│   └── transform_dependent_images_to_template_fly_9_green_lc11.log
+│   └── transform_dependent_images_to_template_fly_4_green_lc11.log
 ├── results
 │   ├── template.nii
 │   ├── template_to_fda
@@ -410,30 +400,63 @@ demo_dataset
 │       ├── fly_3
 │       │   └── green
 │       │       └── lc11.nii
-│       ├── fly_4
-│       │   └── green
-│       │       └── lc11.nii
-│       ├── fly_5
-│       │   └── green
-│       │       └── lc11.nii
-│       ├── fly_6
-│       │   └── green
-│       │       └── lc11.nii
-│       ├── fly_7
-│       │   └── green
-│       │       └── lc11.nii
-│       ├── fly_8
-│       │   └── green
-│       │       └── lc11.nii
-│       └── fly_9
-│           └── green
-│               └── lc11.nii
+│       └── fly_4
+│           └── green
+│               └── lc11.nii
 └── templates
     └── FDA.nii
 
 42 directories, 60 files
 ```
 
+# Artifacts
+
+## FDA
+
+Three closely related but distinct FDA images are provided, a thresholded
+version, an unthresholded version and an (unthresholded) version that complies
+strictly with the NIfTI-1 specification. A bridging transformation is available
+only for the thresholded version. The NIfTI-1 compliant and unthresholded
+versions share the same raster data. The thresholded and unthresholded versions
+share the same metadata but have slightly different raster data. The NIfTI
+compliant image follows the NIfTI convention for the spatial coordinates of +x =
+Right, +y = Anterior, +z = Superior, which is not related by a scaling transform
+to the voxel coordinates. The spatial coordinates of the other versions are
+related to the voxel coordinates by the identity. If you do not to bridge your
+dataset to other atlases, it is recommended that you use the NIfTI compliant
+version.
+
+- [thresholded FDA](https://drive.google.com/file/d/1Ssf2fSzgCsniXmiQiXEO_wgkpciWuQb5/view?usp=sharing)
+- [unthresholded FDA](https://drive.google.com/file/d/1tkyKx-JXFqZ8KbFwGpWaZgFwd-Uk9q9A/view?usp=sharing)
+- [NIfTI compliant FDA](https://drive.google.com/file/d/13EiWDQ0d68xGAadMJclpGWcj428WWxvb/view?usp=sharing)
+
+## Bridging transformations
+
+### To JRC 2018
+
+This transform was obtain using the thresholded FDA. It can be applied to images
+registered to the unthresholded FDA but is "undefined" outside of the support of the thresholded image.
+
+- [thresholded FDA (md5sum bf1de994cf8ade80034cbdcd8509ccb3) to JRC 2018 central brain female (md5sum 5d3819b4f563bc1dcbe8a0d96063d62e)](https://drive.google.com/file/d/1pT4VYq0xaQoNVEsn7sC_1kZ1WQ8hNlef/view?usp=sharing)
+
+### To other reference brains
+
+ Bridging transformations to other reference brains can be obtained by
+ composition using the [navis](https://github.com/navis-org/navis-flybrains) or
+ [Jefferis lab](https://github.com/jefferislab/BridgingRegistrations) bridging resources.
+
+## Replication
+
+This dataset can be used to replicate our LC11 registration accuracy result. Cluster execution recommended.
+
+- [replication dataset](https://drive.google.com/file/d/1os6_hDsxd6HmeL0dc91mEWlnwCsYdlR-/view?usp=sharing)
+
+# Known issues
+
+There is a cache invalidation bug affecting `bifrost build_template` when
+resuming a partially complete run with different parameters than the original
+run. Use `-f` liberally.
+
 # Reference
 
-If you found this tool useful lease cite the BIFROST paper.
+If you found this tool useful please cite the BIFROST paper.
