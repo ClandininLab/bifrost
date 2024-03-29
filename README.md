@@ -234,10 +234,6 @@ executed simultaneously (this depends only on the dependency graph), snakemake
 would submit 64 jobs to the Slurm scheduler and then wait for jobs to finish
 before submitting more.
 
-You can remove this limit and instruct snakemake to submit all available tasks
-to the scheduler by setting `--jobs all` if you dare tempt the wrath of your
-cluster administrator. Use of `--jobs all` is inadvisable in most scenarios.
-
 The `snakemake` process simply coordinates jobs and does no heavy lifting
 itself. It must be executed from an environment containing slurm executables, so
 run it on a login node or as its own job. An [example sbatch script](pipeline/example_sbatch.sbatch) is provided.
@@ -324,9 +320,12 @@ time_series_example
     └── FDA.nii
 ```
 
-As each sample will be submitted as a separate job to the scheduler, long time
-series will stress the scheduler and you are advised not to use `--jobs all` and
-to consider grouping multiple samples into each job.
+Each sample will be submitted as a separate job to the scheduler. Submitting
+thousands of jobs to slurm will deadlock the scheduler (not just for you, for
+your entire institution). Do not do this. If you have more than a couple of
+dozen of timepoints, you should group their execution with Snakemake's job
+grouping feature.
+
 
 Here are some resources on how to do that:
 - https://snakemake.readthedocs.io/en/stable/executing/grouping.html
