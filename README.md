@@ -19,7 +19,10 @@ It may be possible to install `bifrost` on Windows and MacOS but these platforms
 are not officially supported. A [docker](https://docs.docker.com/get-started/)
 image is provided which can be used on all platforms.
 
-Python >=3.8  is required.
+Python >=3.8 is required.
+
+`bifrost` was tested against snakemake 7.30.2. snakemake 8 moved to a plugin
+architecture for slurm support which may result in slight CLI differences.
 
 Refer to `setup.py` for a full list of dependencies.
 
