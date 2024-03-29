@@ -150,7 +150,7 @@ def main():
 
     result_name_help = (
         "Overrides default result name if specified. "
-        "Interpreted as path if prefixed with `\\` or `.\\`, "
+        "Interpreted as path if prefixed with `/` or `./`, "
         "otherwise interpreted as name and written to ALIGNMENT_PATH"
     )
     parser_transform.add_argument("--result_name", help=result_name_help, type=str)
