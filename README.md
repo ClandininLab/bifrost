@@ -424,7 +424,7 @@ share the same metadata but have slightly different raster data. The NIfTI
 compliant image follows the NIfTI convention for the spatial coordinates of +x =
 Right, +y = Anterior, +z = Superior, which is not related by a scaling transform
 to the voxel coordinates. The spatial coordinates of the other versions are
-related to the voxel coordinates by the identity. If you do not to bridge your
+related to the voxel coordinates by the identity. If you do not intend to bridge your
 dataset to other atlases, it is recommended that you use the NIfTI compliant
 version.
 
