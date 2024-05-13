@@ -119,7 +119,7 @@ def register(args):
 
     with h5py.File(f"{results_dir}/transform.h5", "w") as h5_handle:
         for arg_name, arg_val in vars(args).items():
-            if arg_name is not "func" and arg_val is not None:
+            if arg_name != "func" and arg_val is not None:
                 h5_handle.attrs[f"args.{arg_name}"] = arg_val
 
         # ========================================================================== #
