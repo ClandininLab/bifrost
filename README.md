@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.11097260.svg)](https://doi.org/10.5281/zenodo.11097260)
+
 # bifrost
 
 Template building and multi-modal registration
