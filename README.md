@@ -413,45 +413,7 @@ demo_dataset
 
 # Artifacts
 
-## FDA
-
-Three closely related but distinct FDA images are provided, a thresholded
-version, an unthresholded version and an (unthresholded) version that complies
-strictly with the NIfTI-1 specification. A bridging transformation is available
-only for the thresholded version. The NIfTI-1 compliant and unthresholded
-versions share the same raster data. The thresholded and unthresholded versions
-share the same metadata but have slightly different raster data. The NIfTI
-compliant image follows the NIfTI convention for the spatial coordinates of +x =
-Right, +y = Anterior, +z = Superior, which is not related by a scaling transform
-to the voxel coordinates. The spatial coordinates of the other versions are
-related to the voxel coordinates by the identity. If you do not intend to bridge your
-dataset to other atlases, it is recommended that you use the NIfTI compliant
-version.
-
-- [thresholded FDA](https://drive.google.com/file/d/1Ssf2fSzgCsniXmiQiXEO_wgkpciWuQb5/view?usp=sharing)
-- [unthresholded FDA](https://drive.google.com/file/d/1tkyKx-JXFqZ8KbFwGpWaZgFwd-Uk9q9A/view?usp=sharing)
-- [NIfTI compliant FDA](https://drive.google.com/file/d/13EiWDQ0d68xGAadMJclpGWcj428WWxvb/view?usp=sharing)
-
-## Bridging transformations
-
-### To JRC 2018
-
-This transform was obtain using the thresholded FDA. It can be applied to images
-registered to the unthresholded FDA but is "undefined" outside of the support of the thresholded image.
-
-- [thresholded FDA to JRC 2018 central brain female](https://drive.google.com/file/d/1pT4VYq0xaQoNVEsn7sC_1kZ1WQ8hNlef/view?usp=sharing)
-
-### To other reference brains
-
- Bridging transformations to other reference brains can be obtained by
- composition using the [navis](https://github.com/navis-org/navis-flybrains) or
- [Jefferis lab](https://github.com/jefferislab/BridgingRegistrations) bridging resources.
-
-## Replication
-
-This dataset can be used to replicate our LC11 registration accuracy result. Cluster execution recommended.
-
-- [replication dataset](https://drive.google.com/file/d/1os6_hDsxd6HmeL0dc91mEWlnwCsYdlR-/view?usp=sharing)
+The FDA, bridging transforms and a replication dataset are available on [Dryad](https://doi.org/10.5061/dryad.8pk0p2nx1)
 
 # Known issues
 
