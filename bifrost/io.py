@@ -14,7 +14,7 @@ from bifrost.util import package_path
 
 
 def write_affine(h5_handle, name, transform):
-    """Write ants affine transform to h5
+    """Write ANTs affine transform to h5
 
     Args:
       h5_handle: open file handle - h5py.File
@@ -35,7 +35,7 @@ def write_affine(h5_handle, name, transform):
 
 
 def read_affine(h5_handle, name, directory=None):
-    """Read ants affine transform from h5
+    """Read ANTs affine transform from h5
     If directory is not None, writes to a file and returns absolute path
     This allows use with ants.apply_transforms which demands files
 
@@ -67,7 +67,7 @@ def read_affine(h5_handle, name, directory=None):
 
 
 def write_image(h5_handle, name, image):
-    """Writes ants image to h5
+    """Writes ANTs image to h5
 
     Args:
       h5_handle: open file handle - h5py.File
@@ -99,7 +99,7 @@ def write_image(h5_handle, name, image):
 
 
 def read_image(h5_handle, name, directory=None):
-    """Reads ands image from h5
+    """Reads ANTs image from h5
     If directory is not None, writes to a file and returns absolute path
     This allows use with ants.apply_transforms which demands files
 
