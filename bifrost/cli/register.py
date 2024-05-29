@@ -354,8 +354,6 @@ def register(args):
 
             write_image(h5_handle, "/syn/forward_warp", syn["fwdtransforms"][0])
 
-            write_image(h5_handle, "/syn/inverse_warp", syn["invtransforms"][1])
-
             # write intermediate result, cleaning existing if it exists
             Path(f"{results_dir}/registered.nii").unlink(missing_ok=True)
             ants.image_write(moving_img, f"{results_dir}/registered.nii")
