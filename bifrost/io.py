@@ -3,6 +3,7 @@ Module for I/O related methods
 """
 
 import hashlib
+import logging
 import os
 import urllib
 
@@ -132,6 +133,19 @@ def read_image(h5_handle, name, directory=None):
     ants.image_write(image, img_path)
 
     return img_path
+
+
+def guarded_ants_image_read(image_path):
+    """ants.image_read that raises fatal exception for multi-channel images"""
+    image = ants.image_read(image_path)
+
+    if image.components > 1:
+        logger = logging.getLogger(__name__)
+        msg = f"{image_path} has multiple channels. Multi-channel images are not supported by bifrost, split into per-channel images"
+        logger.critical(msg)
+        raise RuntimeError(msg)
+
+    return image
 
 
 def md5sum(filename):

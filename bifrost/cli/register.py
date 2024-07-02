@@ -16,7 +16,8 @@ import tensorflow as tf
 import voxelmorph as vxm
 from skimage.exposure import equalize_adapthist
 
-from bifrost.io import download_weights, md5sum, write_affine, write_image
+from bifrost.io import (download_weights, guarded_ants_image_read, md5sum,
+                        write_affine, write_image)
 from bifrost.util import package_path, transpose_image, update_image_array
 
 # hide GPUs
@@ -127,7 +128,7 @@ def register(args):
         # ========================================================================== #
 
         logger.info("Loading moving image: %s", args.moving)
-        moving_img = ants.image_read(args.moving)
+        moving_img = guarded_ants_image_read(args.moving)
         moving_md5sum = md5sum(args.moving)
         logger.info("Moving image hash: %s", moving_md5sum)
         logger.info("Moving image info: \n %s", repr(moving_img))
@@ -135,7 +136,7 @@ def register(args):
         h5_handle.attrs["moving.md5sum"] = moving_md5sum
 
         logger.info("Loading fixed image: %s", args.fixed)
-        fixed_img = ants.image_read(args.fixed)
+        fixed_img = guarded_ants_image_read(args.fixed)
         fixed_md5sum = md5sum(args.fixed)
         logger.info("Fixed image hash: %s", fixed_md5sum)
         logger.info("Fixed image info: \n %s", repr(fixed_img))
@@ -153,7 +154,7 @@ def register(args):
 
         if args.synthmorph_mask is not None:
             logger.info("Loading SynthMorph mask: %s", args.synthmorph_mask)
-            synthmorph_mask = ants.image_read(args.synthmorph_mask)
+            synthmorph_mask = guarded_ants_image_read(args.synthmorph_mask)
             logger.info("SynthMorph mask hash: %s", md5sum(args.synthmorph_mask))
 
             if (

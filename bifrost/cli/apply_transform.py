@@ -16,7 +16,7 @@ import tensorflow as tf
 import voxelmorph as vxm
 from skimage.exposure import equalize_adapthist
 
-from bifrost.io import md5sum, read_affine, read_image
+from bifrost.io import guarded_ants_image_read, md5sum, read_affine, read_image
 from bifrost.util import transpose_image, update_image_array
 
 # hide GPUs
@@ -84,7 +84,7 @@ def transform(args):
     assert "transform.h5" in os.listdir(args.alignment_path)
 
     logger.info("Loading moving image: %s", args.image_path)
-    moving_img = ants.image_read(args.image_path)
+    moving_img = guarded_ants_image_read(args.image_path)
     logger.info("Moving image hash: %s", md5sum(args.image_path))
     logger.info("Moving image info: \n %s", repr(moving_img))
 

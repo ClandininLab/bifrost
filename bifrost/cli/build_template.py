@@ -16,6 +16,7 @@ from skimage.exposure import equalize_adapthist
 from skimage.filters import threshold_triangle as triangle
 from sklearn.preprocessing import quantile_transform
 
+from bifrost.io import guarded_ants_image_read
 from bifrost.util import sha256, update_image_array
 
 
@@ -223,7 +224,7 @@ def build_template(args):
 
 def preprocess(args, input_path, output_path):
     """Runs all preprocessing"""
-    image = ants.image_read(input_path)
+    image = guarded_ants_image_read(input_path)
 
     if args.preprocessing is None:
         shutil.copy(input_path, output_path)
