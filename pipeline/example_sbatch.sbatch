@@ -20,8 +20,13 @@ source $GROUP_HOME/venvs/bifrost/bin/activate
 #  - a cluster_profile directory containing a config.yaml (the cluster profile)
 cd $GROUP_HOME/src/bifrost/pipeline
 
-snakemake --slurm \                           # submit tasks as jobs to the slurm scheduler
-          --verbose \                         # log to stdout verbosely
-          --jobs 100 \                        # run no more than 100 jobs at the same time
-          --directory /path/to/data/dir \     # as described in the data requirements section of the readme
-          --profile cluster_profile           # use the cluster specific settings in the cluster profile
+# submit tasks as jobs to the slurm scheduler
+# log to stdout verbosely
+# run no more than 100 jobs at the same time
+# as described in the data requirements section of the readme
+# use the cluster specific settings in the cluster profile
+snakemake --slurm \
+          --verbose \
+          --jobs 100 \
+          --directory /path/to/data/dir \
+          --profile cluster_profile
