@@ -245,20 +245,30 @@ def transform(args):
             logger.info("Applying synthmorph transform")
 
             with tf.device("/CPU:0"):
+                transform = vxm.networks.Transform(moving_img.shape, nb_feats=1)
 
-                # transform label image with nearest-neighbor interpolation
-                print("Using nearest-neighbor interpolation", flush = True)
+                # transform label image component-by-component
                 if args.label_image:
-                    transform = vxm.networks.Transform(moving_img.shape, nb_feats=1, interp_method="nearest")
-                    warped = transform.predict(
-                        [
-                            moving_img.numpy().reshape((1,) + moving_img.shape + (1,)),
-                            warp.reshape((1,) + warp.shape),
-                        ]
-                    ).squeeze()
+                    warped = np.zeros(moving_img.shape)
 
+                    for label in np.unique(moving_img.numpy()):
+                        mask = moving_img.numpy() == label
+
+                        label_image = np.zeros(moving_img.shape)
+                        label_image[mask] = 1
+
+                        warped_label_image = transform.predict(
+                            [
+                                label_image.reshape((1,) + moving_img.shape + (1,)),
+                                warp.reshape((1,) + warp.shape),
+                            ]
+                        ).squeeze()
+
+                        warped_mask = warped_label_image > 0
+                        warped_label_image[warped_mask] = 1
+
+                        warped[warped_mask] = label
                 else:
-                    transform = vxm.networks.Transform(moving_img.shape, nb_feats=1)
                     warped = transform.predict(
                         [
                             moving_img.numpy().reshape((1,) + moving_img.shape + (1,)),
