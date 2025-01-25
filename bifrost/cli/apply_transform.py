@@ -247,9 +247,11 @@ def transform(args):
             with tf.device("/CPU:0"):
 
                 # transform label image with nearest-neighbor interpolation
-                print("Using nearest-neighbor interpolation", flush = True)
+                logger.info("Using nearest-neighbor interpolation")
                 if args.label_image:
-                    transform = vxm.networks.Transform(moving_img.shape, nb_feats=1, interp_method="nearest")
+                    transform = vxm.networks.Transform(
+                        moving_img.shape, nb_feats=1, interp_method="nearest"
+                    )
                     warped = transform.predict(
                         [
                             moving_img.numpy().reshape((1,) + moving_img.shape + (1,)),
@@ -278,7 +280,7 @@ def transform(args):
         #                              WRITE IMAGE                                   #
         # ========================================================================== #
 
-        print(args.result_name)
+        logger.info("Result name: %s", args.result_name)
         if args.result_name is None:
             result_name = (
                 f'{os.path.basename(args.image_path).split(".")[0]}_transformed.nii'
